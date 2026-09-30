@@ -8,17 +8,22 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import com.revrobotics.ResetMode;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
 import com.revrobotics.PersistMode;
 
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,7 +42,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final SparkMaxConfig rightDriveBackConfig;
 
   private final DifferentialDrive drivetrain;
-
   private final DifferentialDrivePoseEstimator poseEstimator;
   private final DifferentialDriveKinematics kinematics;
   private final Field2d field;
@@ -56,7 +60,7 @@ public class DriveSubsystem extends SubsystemBase {
     rightDriveFrontConfig = new SparkMaxConfig();
     rightDriveBackConfig = new SparkMaxConfig();
 
-    kinematics = new DifferentialDriveKinematics(Units.inchesToMeters(Constants.kTrackWitdh));
+    kinematics = new DifferentialDriveKinematics(Constants.kTrackWitdh);
 
     poseEstimator = new DifferentialDrivePoseEstimator(
       kinematics, 
@@ -69,16 +73,99 @@ public class DriveSubsystem extends SubsystemBase {
 
 
     configure();
+    configurePathplanner();
 
     drivetrain = new DifferentialDrive(leftDriveBack::set, rightDriveBack::set);
   }
 
+  private void configurePathplanner() {
+    RobotConfig config;
 
+    try{
+      config = RobotConfig.fromGUISettings();
+
+          AutoBuilder.configure(
+            this::getPose, // Robot pose supplier
+            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+            new PPLTVController(0.02), // PPLTVController is the built in path following controller for differential drive trains
+            config, // The robot configuration
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return false;
+            },
+            this // Reference to this subsystem to set requirements
+    );
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+  }
+
+  private ChassisSpeeds getRobotRelativeSpeeds() {
+    //TODO: convert to m/s
+    double leftVelocity = rpmToMetersPerSecond(leftDriveBack.getEncoder().getVelocity());
+    double rightVelocity = rpmToMetersPerSecond(rightDriveBack.getEncoder().getVelocity());
+
+    DifferentialDriveWheelSpeeds wheelSpeeds = new DifferentialDriveWheelSpeeds(leftVelocity, rightVelocity);
+    ChassisSpeeds speeds = kinematics.toChassisSpeeds(wheelSpeeds);
+
+    return speeds;
+  }
+
+  private double rpmToMetersPerSecond(double motorRPM) {
+    double wheelRPM = motorRPM / Constants.kWheelGearRatio;
+    double wheelCircumference = Math.PI * Constants.kWheelDiameter;
+
+    return (wheelRPM / 60.0) * wheelCircumference;
+  }
+
+  private double metersPerSecondToRPM(double metersPerSecond) {
+    double wheelCircumference = Math.PI * Constants.kWheelDiameter;
+    double rotationsPerSecond = metersPerSecond / wheelCircumference;
+    double wheelRPM = rotationsPerSecond * 60.0;
+
+    return wheelRPM * Constants.kWheelGearRatio;
+}
+
+  private double rotationsToMeters(double motorRotations) {
+    double wheelRotations = motorRotations / Constants.kWheelGearRatio;
+
+    return wheelRotations * Math.PI * Constants.kWheelDiameter;
+}
+
+  private void resetPose(Pose2d pose) {
+    poseEstimator.resetPose(pose);
+  }
+
+  private void driveRobotRelative(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds =
+        kinematics.toWheelSpeeds(speeds);
+
+    leftDriveBack.getClosedLoopController().setSetpoint(
+        metersPerSecondToRPM(wheelSpeeds.leftMetersPerSecond),
+        ControlType.kVelocity
+    );
+
+    rightDriveBack.getClosedLoopController().setSetpoint(
+        metersPerSecondToRPM(wheelSpeeds.rightMetersPerSecond),
+        ControlType.kVelocity
+    );
+}
 
   private void configure() {
     leftDriveBackConfig
       .inverted(true)
-      .openLoopRampRate(.5);
+      .openLoopRampRate(.5)
+      .closedLoop.p(Constants.kDriveP);
 
     leftDriveFrontConfig
       .inverted(true)
@@ -86,7 +173,8 @@ public class DriveSubsystem extends SubsystemBase {
       .openLoopRampRate(.5);
 
     rightDriveBackConfig
-      .openLoopRampRate(.5);
+      .openLoopRampRate(.5)
+      .closedLoop.p(Constants.kDriveP);
     
     rightDriveFrontConfig
       .follow(rightDriveBack.getDeviceId())
@@ -99,12 +187,12 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private Rotation2d getRotation2d() {
-    return gyro.getRotation2d(); //TODO: see if we have gyro and make this work
+    return gyro.getRotation2d();
   }
 
   private void updatePoseEstimation() {
-    double leftEncoderValue = leftDriveBack.getEncoder().getPosition(); //Need  to convert to meters
-    double rightEncoderValue = rightDriveBack.getEncoder().getPosition(); //Need to convert to meters
+    double leftEncoderValue = rotationsToMeters(leftDriveBack.getEncoder().getPosition());
+    double rightEncoderValue = rotationsToMeters(rightDriveBack.getEncoder().getPosition());
 
     poseEstimator.update(
       getRotation2d(), 

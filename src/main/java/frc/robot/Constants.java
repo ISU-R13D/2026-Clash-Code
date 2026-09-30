@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -19,9 +21,16 @@ public final class Constants {
 
   }
 
-  public static final double kTrackWitdh = 0.0; //Distance between the sets of wheels
+  public static final double kTrackWitdh = Units.inchesToMeters(21.49606); //Distance between the sets of wheels todo: real value
   public static final boolean kEstimatePose = true;
 
+<<<<<<< HEAD
+=======
+  public static final double kWheelDiameter = Units.inchesToMeters(6); //Todo: real value
+  public static final double kWheelGearRatio = 8.46; //todo: real value
+
+  public static final double kDriveP = 0.00001; //todo:test
+>>>>>>> 1efb857683f5216f402b12431c4dc8594e56931a
   public static class ShooterConstants {
     public static final int shooterLeaderID = 5;
     public static final int shooterFollowerID = 6;
