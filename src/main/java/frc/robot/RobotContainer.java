@@ -12,16 +12,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
-  private final DriveCommand m_driveCommand = new DriveCommand(m_driveSubsystem);
-
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final DriveCommand m_driveCommand = new DriveCommand(m_driveSubsystem, m_driverController);
 
   public RobotContainer() {
     configureBindings();
-
-    //test
   }
 
   /**
@@ -45,8 +43,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    //return Autos.exampleAuto(m_exampleSubsystem);
-
     return null;
   }
 

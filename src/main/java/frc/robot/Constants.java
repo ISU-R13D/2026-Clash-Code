@@ -16,4 +16,7 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static final double kTrackWitdh = 0.0; //Distance between the sets of wheels
+  public static final boolean kEstimatePose = true;
 }
