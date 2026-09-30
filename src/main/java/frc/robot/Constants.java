@@ -16,4 +16,9 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+
+  public static class IntakeConstants {
+    public static final int ACTUATOR_ID = 7;
+    public static final int SHAKE_ID = 8;
+  }
 }
