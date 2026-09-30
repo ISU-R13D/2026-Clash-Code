@@ -7,16 +7,24 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.commands.ShootCommand;
+import frc.robot.subsystems.ShootSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverOneController = new CommandXboxController(OperatorConstants.kDriverOneControllerPort);
+
+  private final CommandXboxController m_driverTwoController = new CommandXboxController(OperatorConstants.kDriverTwoControllerPort);
 
   private final DriveSubsystem m_driveSubsystem = new DriveSubsystem();
 
-  private final DriveCommand m_driveCommand = new DriveCommand(m_driveSubsystem, m_driverController);
+  private final DriveCommand m_driveCommand = new DriveCommand(m_driveSubsystem, m_driverOneController);
+
+  private final ShootSubsystem m_shootSubsystem = new ShootSubsystem();
+
+  private final ShootCommand m_shootCommand = new ShootCommand(m_shootSubsystem, m_driverTwoController);
 
   public RobotContainer() {
     configureBindings();
@@ -35,6 +43,9 @@ public class RobotContainer {
     //new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new ExampleCommand(m_exampleSubsystem));
 
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_driverTwoController.rightTrigger().whileTrue(m_shootCommand);
+
+    
   }
 
   /**

@@ -14,7 +14,9 @@ package frc.robot;
  */
 public final class Constants {
   public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
+    public static final int kDriverOneControllerPort = 0;
+    public static final int kDriverTwoControllerPort = 1;
+
   }
 
   public static final double kTrackWitdh = 0.0; //Distance between the sets of wheels
