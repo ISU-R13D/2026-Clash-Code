@@ -5,31 +5,36 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.DriveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DriveCommand extends Command {
   private final DriveSubsystem driveSubsystem;
 
-  public DriveCommand(DriveSubsystem subsystem) {
+  private final CommandXboxController controller;
+
+  public DriveCommand(DriveSubsystem subsystem, CommandXboxController controller) {
     driveSubsystem = subsystem;
+
+    this.controller = controller;
 
     addRequirements(driveSubsystem);
   }
 
-  // Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    driveSubsystem.drive(controller.getLeftY(), controller.getRightX());
+  }
 
-  // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveSubsystem.stop();
+  }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return false;
