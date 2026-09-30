@@ -26,4 +26,13 @@ public final class Constants {
   public static final double kWheelGearRatio = 8.46; //todo: real value
 
   public static final double kDriveP = 0.00001; //todo:test
+  public static class ShooterConstants {
+    public static final int shooterLeaderID = 5;
+    public static final int shooterFollowerID = 6;
+  }
+  
+  public static class IntakeConstants {
+    public static final int ACTUATOR_ID = 7;
+    public static final int SHAKE_ID = 8;
+  }
 }
