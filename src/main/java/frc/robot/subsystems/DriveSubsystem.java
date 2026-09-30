@@ -47,7 +47,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final Field2d field;
 
   private final AHRS gyro = new AHRS(NavXComType.kMXP_UART);
-  
 
   public DriveSubsystem() {
     leftDriveFront = new SparkMax(1, MotorType.kBrushless);
