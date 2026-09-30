@@ -18,4 +18,12 @@ public final class Constants {
     public static final int shooterLeaderID = 5;
     public static final int shooterFollowerID = 6;
   }
+
+  public static final double kTrackWitdh = 0.0; //Distance between the sets of wheels
+  public static final boolean kEstimatePose = true;
+
+  public static class IntakeConstants {
+    public static final int ACTUATOR_ID = 7;
+    public static final int SHAKE_ID = 8;
+  }
 }
