@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,15 +18,18 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+
 public class ShootSubsystem extends SubsystemBase {
 
-  private final SparkMax shooterLeader = new SparkMax(OperatorConstants.shooterLeaderID, MotorType.kBrushless);
-  private final SparkMax shooterFollower = new SparkMax(OperatorConstants.shooterFollowerID, MotorType.kBrushless);
+  private final SparkMax shooterLeader = new SparkMax(ShooterConstants.shooterLeaderID, MotorType.kBrushless);
+  private final SparkMax shooterFollower = new SparkMax(ShooterConstants.shooterFollowerID, MotorType.kBrushless);
 
   //For RPM control
   private final SparkClosedLoopController shooterController = shooterLeader.getClosedLoopController();
 
-  //Encode for Drivers Station Panel speed value
+  //Encoder for Drivers Station Display
   private final SparkAbsoluteEncoder shooterEncoder = shooterLeader.getAbsoluteEncoder(); 
   
   public ShootSubsystem() {
@@ -42,13 +45,11 @@ public class ShootSubsystem extends SubsystemBase {
     SparkMaxConfig shooterFollowerConfig = new SparkMaxConfig();
 
     shooterFollowerConfig
-    .follow(OperatorConstants.shooterLeaderID)
+    .follow(ShooterConstants.shooterLeaderID)
     .inverted(true);
 
     shooterLeader.configure(shooterLeaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     shooterFollower.configure(shooterFollowerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
-
 
   }
 
@@ -56,11 +57,11 @@ public class ShootSubsystem extends SubsystemBase {
     if(speed == 0.0)
       return this.runOnce(() -> shooterLeader.stopMotor());
 
-    return this.startEnd(() -> shooterLeader.set(speed), () -> shooterLeader.stopMotor());
+    return this.run(() -> shooterLeader.set(speed));
   }
 
   public Command spinRPM(double rpm) {
-    return this.startEnd(() -> shooterController.setSetpoint(rpm, ControlType.kVelocity), () -> shooterLeader.stopMotor());
+    return this.run(() -> shooterController.setSetpoint(rpm, ControlType.kVelocity));
   }
 
 
@@ -71,6 +72,7 @@ public class ShootSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
+    SmartDashboard.putNumber("Shooter Speed", shooterEncoder.getVelocity());
+  
   }
 }
