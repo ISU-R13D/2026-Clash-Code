@@ -6,32 +6,36 @@ import frc.robot.subsystems.ShootSubsystem;
 
 public class ShootCommand extends Command {
     private final ShootSubsystem shooter;
-    private final double speed;
-    private final boolean speedIsRPM;
+    private final CommandXboxController controller;
 
     public ShootCommand(ShootSubsystem shooter, double speed) {
         this.shooter = shooter;
-        this.speed = speed;
-        this.speedIsRPM = true;
+        this.controller = null;
         addRequirements(shooter);
+
+        this.fixedSpeed = speed;
     }
 
     public ShootCommand(ShootSubsystem shooter, CommandXboxController controller) {
         this.shooter = shooter;
-        this.speed = controller.getRightTriggerAxis(); //Ideally we know where we are on the field and use that to set the speed
-        this.speedIsRPM = false;
+        this.controller = controller;
+        this.fixedSpeed = 0;
         addRequirements(shooter);
     }
+
+    private final double fixedSpeed;
 
     @Override
     public void initialize() {}
 
     @Override
     public void execute() {
-        if(speedIsRPM)
-            shooter.spinRPM(speed);
-        else
+        if (controller != null) {
+            double speed = controller.getRightTriggerAxis();
             shooter.spinPercentage(speed);
+        } else {
+            shooter.spinRPM(fixedSpeed);
+        }
     }
 
     @Override
@@ -44,4 +48,3 @@ public class ShootCommand extends Command {
         return false;
     }
 }
-

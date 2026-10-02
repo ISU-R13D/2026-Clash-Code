@@ -6,8 +6,12 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.IntakeDeploy;
+import frc.robot.commands.IntakeRetract;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.IntakeSpin;
 import frc.robot.subsystems.ShootSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -29,7 +33,15 @@ public class RobotContainer {
 
   private final ShootSubsystem m_shootSubsystem = new ShootSubsystem();
 
-  private final ShootCommand m_shootCommand = new ShootCommand(m_shootSubsystem, m_driverTwoController);
+  private final ShootCommand m_shootCommand = new ShootCommand(m_shootSubsystem, m_driverOneController);
+
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
+  
+  private final IntakeDeploy m_intakeDeploy = new IntakeDeploy(m_intakeSubsystem);
+  
+  private final IntakeRetract m_intakeRetract = new IntakeRetract(m_intakeSubsystem);
+
+  private final IntakeSpin m_intakeSpin = new IntakeSpin(m_intakeSubsystem);
 
   public RobotContainer() {
     configureBindings();
@@ -48,7 +60,10 @@ public class RobotContainer {
     //new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new ExampleCommand(m_exampleSubsystem));
 
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverTwoController.rightTrigger().whileTrue(m_shootCommand);
+    m_driverOneController.rightTrigger().whileTrue(m_shootCommand);
+    m_driverOneController.rightBumper().onTrue(m_intakeDeploy);
+    m_driverOneController.leftBumper().onTrue(m_intakeRetract);
+    m_driverOneController.a().toggleOnTrue(m_intakeSpin);
     
   }
 

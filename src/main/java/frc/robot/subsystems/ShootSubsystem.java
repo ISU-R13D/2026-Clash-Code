@@ -16,6 +16,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +31,7 @@ public class ShootSubsystem extends SubsystemBase {
   private final SparkClosedLoopController shooterController = shooterLeader.getClosedLoopController();
 
   //Encoder for Drivers Station Display
-  private final SparkAbsoluteEncoder shooterEncoder = shooterLeader.getAbsoluteEncoder(); 
+  private final RelativeEncoder shooterEncoder = shooterLeader.getEncoder(); 
   
   public ShootSubsystem() {
     SparkMaxConfig shooterLeaderConfig = new SparkMaxConfig();
@@ -45,29 +46,25 @@ public class ShootSubsystem extends SubsystemBase {
     SparkMaxConfig shooterFollowerConfig = new SparkMaxConfig();
 
     shooterFollowerConfig
-    .follow(ShooterConstants.shooterLeaderID)
-    .inverted(true);
+    .follow(ShooterConstants.shooterLeaderID, true);
 
     shooterLeader.configure(shooterLeaderConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     shooterFollower.configure(shooterFollowerConfig, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
   }
 
-  public Command spinPercentage(double speed) {
-    if(speed == 0.0)
-      return this.runOnce(() -> shooterLeader.stopMotor());
-
-    return this.run(() -> shooterLeader.set(speed));
+  public void spinPercentage(double speed) {
+      shooterLeader.set(speed);
   }
 
-  public Command spinRPM(double rpm) {
-    return this.run(() -> shooterController.setSetpoint(rpm, ControlType.kVelocity));
+  public void spinRPM(double rpm) {
+      shooterController.setSetpoint(rpm, ControlType.kVelocity);
   }
 
-
-  public Command stop(){
-    return this.runOnce(() -> shooterLeader.stopMotor());
+  public void stop() {
+      shooterLeader.stopMotor();
   }
+
 
   @Override
   public void periodic() {
