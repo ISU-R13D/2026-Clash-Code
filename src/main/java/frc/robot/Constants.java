@@ -24,13 +24,11 @@ public final class Constants {
   public static final double kTrackWitdh = Units.inchesToMeters(21.49606); //Distance between the sets of wheels todo: real value
   public static final boolean kEstimatePose = true;
 
-<<<<<<< HEAD
-=======
   public static final double kWheelDiameter = Units.inchesToMeters(6); //Todo: real value
   public static final double kWheelGearRatio = 8.46; //todo: real value
 
   public static final double kDriveP = 0.00001; //todo:test
->>>>>>> 1efb857683f5216f402b12431c4dc8594e56931a
+  
   public static class ShooterConstants {
     public static final int shooterLeaderID = 5;
     public static final int shooterFollowerID = 6;
@@ -39,5 +37,8 @@ public final class Constants {
   public static class IntakeConstants {
     public static final int ACTUATOR_ID = 7;
     public static final int SHAKE_ID = 8;
+
+    public static final double ACTUATOR_INTAKE_SPEED = 0.0;
+    public static final double SHAKE_INTAKE_SPEED = 0.0;
   }
 }

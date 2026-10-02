@@ -37,4 +37,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public void stopShake() {
         shakeMotor.stopMotor();
     }
+
+    public void stopAll() {
+        shakeMotor.stopMotor();
+        actuatorMotor.stopMotor();
+    }
 }

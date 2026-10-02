@@ -5,25 +5,29 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeCommand extends Command {
     private final IntakeSubsystem intake;
-    private final double power;
+    private final double actuatorSpeed;
+    private final double shakeSpeed;
 
-    public IntakeCommand(IntakeSubsystem intake, double power) {
+    public IntakeCommand(IntakeSubsystem intake, double actuatorSpeed, double shakeSpeed) {
         this.intake = intake;
-        this.power = power;
+        this.actuatorSpeed = actuatorSpeed;
+        this.shakeSpeed = shakeSpeed;
         addRequirements(intake);
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        intake.setActuatorSpeed(actuatorSpeed);
+        intake.setShakeSpeed(shakeSpeed);
+    }
 
     @Override
     public void execute() {
-        intake.setShakeSpeed(power);
     }
 
     @Override
     public void end(boolean interrupted) {
-        intake.stopShake();
+        intake.stopAll();
     }
 
     @Override
