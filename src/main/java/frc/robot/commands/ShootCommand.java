@@ -32,7 +32,7 @@ public class ShootCommand extends Command {
     public void execute() {
         if (controller != null) {
             double speed = controller.getRightTriggerAxis();
-            shooter.spinPercentage(speed);
+            shooter.spinPercentage(.8);
         } else {
             shooter.spinRPM(fixedSpeed);
         }

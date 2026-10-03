@@ -16,7 +16,7 @@ public class IntakeSpin extends Command {
 
     @Override
     public void execute() {
-        intake.setShakeSpeed(.5);
+        intake.setShakeSpeed(1);
     }
 
     @Override

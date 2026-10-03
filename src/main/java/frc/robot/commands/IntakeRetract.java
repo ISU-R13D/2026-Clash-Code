@@ -19,6 +19,7 @@ public class IntakeRetract extends Command {
     public void execute() {
         if (!intake.isRetracted()) {
             intake.retract();
+            intake.stopShake();
         } else {
             intake.stopActuator();
         }

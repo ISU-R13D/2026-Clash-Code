@@ -35,11 +35,11 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public boolean isRetracted() {
-        return actuatorEncoder.getPosition() >= 17.0;
+        return actuatorEncoder.getPosition() <= .1 ;
     }
 
     public boolean isDeployed() {
-        return actuatorEncoder.getPosition() <= 0.1;
+        return actuatorEncoder.getPosition() >=  17.1;
     }
 
     public void stopActuator() {

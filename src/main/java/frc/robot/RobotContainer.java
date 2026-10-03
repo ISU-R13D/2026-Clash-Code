@@ -33,7 +33,7 @@ public class RobotContainer {
 
   private final ShootSubsystem m_shootSubsystem = new ShootSubsystem();
 
-  private final ShootCommand m_shootCommand = new ShootCommand(m_shootSubsystem, m_driverOneController);
+  private final ShootCommand m_shootCommand = new ShootCommand(m_shootSubsystem, m_driverTwoController);
 
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   
@@ -60,10 +60,9 @@ public class RobotContainer {
     //new Trigger(m_exampleSubsystem::exampleCondition).onTrue(new ExampleCommand(m_exampleSubsystem));
 
     //m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverOneController.rightTrigger().whileTrue(m_shootCommand);
-    m_driverOneController.rightBumper().onTrue(m_intakeDeploy);
-    m_driverOneController.leftBumper().onTrue(m_intakeRetract);
-    m_driverOneController.a().toggleOnTrue(m_intakeSpin);
+    m_driverTwoController.rightTrigger().whileTrue(m_shootCommand);
+    m_driverTwoController.rightBumper().onTrue(m_intakeDeploy);
+    m_driverTwoController.leftBumper().onTrue(m_intakeRetract);
     
   }
 

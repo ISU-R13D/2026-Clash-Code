@@ -21,6 +21,7 @@ public class IntakeDeploy extends Command {
             intake.deploy();
         } else {
             intake.stopActuator();
+            intake.setShakeSpeed(1);
         }
     }
 

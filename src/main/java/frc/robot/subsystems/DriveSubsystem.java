@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final DifferentialDriveKinematics kinematics;
   private final Field2d field;
 
-  private final AHRS gyro = new AHRS(NavXComType.kMXP_UART);
+  private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
 
   public DriveSubsystem() {
     leftDriveFront = new SparkMax(1, MotorType.kBrushless);
@@ -180,6 +180,9 @@ public class DriveSubsystem extends SubsystemBase {
       .follow(rightDriveBack.getDeviceId())
       .openLoopRampRate(.5);
 
+    gyro.resetDisplacement();
+    gyro.reset();
+
     leftDriveBack.configure(leftDriveBackConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     leftDriveFront.configure(leftDriveFrontConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightDriveBack.configure(rightDriveBackConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -187,8 +190,9 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private Rotation2d getRotation2d() {
-    return gyro.getRotation2d();
+    return Rotation2d.fromDegrees(-gyro.getAngle());
   }
+
 
   private void updatePoseEstimation() {
     double leftEncoderValue = rotationsToMeters(leftDriveBack.getEncoder().getPosition());
@@ -219,6 +223,7 @@ public class DriveSubsystem extends SubsystemBase {
       updatePoseEstimation();
 
       field.setRobotPose(getPose());
+      SmartDashboard.putNumber("gyro", gyro.getAngle());
       SmartDashboard.putData("Field", field);
     }
   }
